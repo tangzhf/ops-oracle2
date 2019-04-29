@@ -1,0 +1,42 @@
+---
+  - name: get backup date
+    shell: date  +"%y%m%d"
+    register: date
+
+  - name: baupup log file by day
+    shell: cat {{ item.log_name}} >> bak_{{date.stdout}}_{{item.log_name}} && echo '' > {{item.log_name}} chdir={{item.log_path}}
+    with_items:
+      - { log_name: "{{ listener_tracelog_name }}", log_path: "{{ listener_traceLog_path }}" }
+  
+  - name: find logfile before 20 day ago
+    find:
+      paths: "{{item.log_path}}"
+      age: 20d
+      patterns: '*.trc,*.trm,*.log,*.log*,*.xml,*.aud'
+      file_type: file
+      recurse: yes
+    with_items:
+      - log_path: "{{ listener_alterLog_path }}"
+      - log_path: "{{ listener_traceLog_path }}"
+      - log_path: "{{ trace_log_path }}"
+      - log_path: "{{ audit_log_path }}"
+      - log_path: "{{ os_expdp_dir }}"
+    register: logfiles
+  
+  - name: delete  logfiles with find
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    with_items:
+      - "{{logfiles.results[0].files}}"
+      - "{{logfiles.results[1].files}}"
+      - "{{logfiles.results[2].files}}"
+      - "{{logfiles.results[3].files}}"
+      - "{{logfiles.results[4].files}}"
+    register: result
+
+  - name: generate log time
+    import_tasks: common/tasks/generate_time.yml
+
+  - name: loging 
+    shell: echo {{ logTime.stdout }} "[INFO]:" {{ hostname }} "The logs before  20 days is cleard !!" >>  /tmp/ops_{{hostname }}.log && echo "</p>" >>  /tmp/ops_{{hostname }}.log

@@ -1,0 +1,26 @@
+---
+# log path vars
+listener_alterLog_path: /u01/app/oracle/diag/tnslsnr/oa-test/listener/alert
+listener_traceLog_path: /u01/app/oracle/diag/tnslsnr/oa-test/listener/trace
+listener_tracelog_name: listener.log
+
+trace_log_path: /u01/app/oracle/diag/rdbms/orcl/orcl/trace
+trace_log_name: alert_orcl.log
+
+audit_log_path: /u01/app/oracle/admin/orcl/adump
+
+log_keep_time: 15d
+
+# host vars
+hostname: test-10.0.1.176
+
+#export vars
+os_expdp_dir: /data/orcl/datafile
+expdpfile_retain_days: 15d
+db_account: system/oracle
+db_expdp_dir: EXPDP_DIR
+db_servername: TEST
+db_schemas: u1
+
+# mail vars
+maili_receiver: username@mail.com

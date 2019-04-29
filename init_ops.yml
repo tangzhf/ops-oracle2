@@ -1,0 +1,8 @@
+---
+  - hosts: single-db
+    gather_facts:  false
+    tasks:
+    - name:  Sync Time
+      import_tasks: roles/update_time.yml
+    - name: clear logs
+      import_tasks: roles/clear_logs.yml

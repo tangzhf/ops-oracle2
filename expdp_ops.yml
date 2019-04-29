@@ -1,0 +1,6 @@
+---
+  - hosts: single-db
+    gather_facts:  false
+    tasks:
+    - name: impdp 
+      import_tasks: roles/expdp.yml

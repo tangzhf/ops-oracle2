@@ -1,0 +1,11 @@
+- name: send mail
+  mail:
+    host: 10.0.0.10
+    port: 25
+    username: dba_ops
+    #password: passwd
+    from: db_ops@mail.com
+    to: "{{ maili_receiver }}"
+    subject: "{{ mail_subject }}"
+    subtype: "{{ subtype }}"
+    body: "{{ mail_body }}"

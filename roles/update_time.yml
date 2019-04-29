@@ -1,0 +1,19 @@
+---
+    - name: generate log time
+      import_tasks: common/tasks/generate_time.yml      
+       
+    - name: ntpdate is exist
+      command: whereis ntpdate
+
+    - name: update time from DNS
+      command: ntpdate 10.0.0.1
+      ignore_errors: yes
+      register: result
+
+    - name: logging date when not update
+      shell:  echo {{ logTime.stdout }} "[ERROR]:" {{ hostname }} " is not update time !! Becase the server not install command with ntpdate"  > /tmp/ops_{{ hostname }}.log && echo "</p>" >> /tmp/ops_{{hostname }}.log
+      when: result is failed
+
+    - name: logging when ntpdate is sucess
+      shell: echo {{ logTime.stdout }} "[INFO]:" {{ hostname }} {{result.stdout_lines}}  > /tmp/ops_{{hostname }}.log && echo "</p>" >> /tmp/ops_{{hostname }}.log
+      when: result is succeeded

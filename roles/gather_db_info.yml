@@ -1,0 +1,28 @@
+- name: copy files to target server
+  copy: src=. dest=/tmp/ owner=root
+
+- name: gather info of  objects with big
+  shell: /bin/bash /tmp/gather_object.sh
+  register: big_info
+
+- name: gather info of tablespace
+  shell: /bin/bash /tmp/gather_tablespace_usage.sh
+  register: tbs_info
+
+- name: generate log time
+  import_tasks: common/tasks/generate_time.yml
+
+- name: logging tbs_info
+  shell: echo {{ logTime.stdout }} "[INFO]:" {{ hostname }} "utility rate of tablespace:</p><font size=\"5\" color=\"red\">tablespace used space</font><br/><table border=\"1\"><tr><td>TABLESPACE_NAME</td><td>TOTAL_M</td><td>FREE_M</td><td>USE_M</td><td>USED%</td></tr>{{ tbs_info.stdout }}</table><br/><font size=\"5\" color=\"red\">Top 10 of big objects:</font><br/><table border=\"1\"><tr><td>OWNER</td><td>SEGMENT_NAME</td><td>SEGMENT_TYPE</td><td>USED_SPACE_M</tr>{{ big_info.stdout }}</table>" >> /tmp/ops_{{hostname }}.log
+  
+- name: get mail contents
+  shell: cat /tmp/ops_{{hostname }}.log
+  register: mail_content
+  
+- name: send mail
+  include_tasks: common/tasks/send_mail.yml
+  vars:
+    mail_subject: "{{ hostname }}_OPS-log"
+    subtype: "html"
+    mail_body: "{{ mail_content.stdout }}"
+

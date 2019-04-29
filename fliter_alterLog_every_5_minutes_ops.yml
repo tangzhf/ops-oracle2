@@ -1,0 +1,6 @@
+---
+  - hosts: single-db
+    gather_facts:  false
+    tasks:
+    - name: fliter alterLog every 5 minuites
+      import_tasks: roles/filter_alert_log.yml

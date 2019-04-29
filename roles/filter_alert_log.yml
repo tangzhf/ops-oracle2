@@ -1,0 +1,21 @@
+- name: grep alter log file
+  shell: grep -Eic 'error|ora-' {{ trace_log_name }}  chdir={{ trace_log_path }}
+  register: out_info
+  ignore_errors: True
+
+- name: If error in log file
+  shell: cat {{ trace_log_name }} > err_alter{{ out_info.start.replace(' ','_').replace(':','')[0:17] }}.log chdir={{ trace_log_path }} && echo ''> {{ trace_log_name }}  &&  cat err_alter{{ out_info.start.replace(' ','_').replace(':','')[0:17] }}.log
+  register: err_out
+  when: out_info.stdout >"0"
+
+- name: send error mail  
+  import_tasks: common/tasks/send_mail.yml
+  vars:
+    mail_subject: "AlertLog-err_{{ hostname }}"
+    subtype: "plain"
+    mail_body: "{{ err_out.stdout }}"
+  when: out_info.stdout >"0"
+
+- name: No error in log file 
+  shell: cat {{ trace_log_name }} >> backup_{{ trace_log_name }}  chdir={{ trace_log_path }} && echo ''> {{ trace_log_name }} 
+  when: out_info.stdout == "0"

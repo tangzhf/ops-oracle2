@@ -1,0 +1,3 @@
+- name: generate log time
+  shell: date  +"%Y-%m-%d %H:%m:%S"
+  register: logTime
