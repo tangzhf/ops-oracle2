@@ -1,1 +1,6 @@
-first readme
+升级自动运维脚本。添加了日志记录。
+
+1 0 * * * /usr/bin/ansible-playbook /root/ansible_pkg/init_ops.yml -i /root/ansible_pkg/hosts.cfg
+*/5 * * * * /usr/bin/ansible-playbook /root/ansible_pkg/fliter_alterLog_every_5_minutes_ops.yml  -i/root/ansible_pkg/hosts.cfg
+00 03 * * * /usr/bin/ansible-playbook  /root/ansible_pkg/expdp_ops.yml -i /root/ansible_pkg/hosts.cfg
+40 08 * * * /usr/bin/ansible-playbook  /root/ansible_pkg/gather_object_info_ops.yml -i /root/ansible_pkg/hosts.cfg
